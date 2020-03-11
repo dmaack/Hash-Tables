@@ -1,3 +1,5 @@
+import hashlib
+
 # '''
 # Linked List hash table key/value pair
 # '''
@@ -14,16 +16,17 @@ class HashTable:
     '''
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
-        self.storage = [None] * capacity
+        self.storage = [None] * capacity # allocating memory with python list
 
 
-    def _hash(self, key):
+    def _hash(self, key): # what does the leading underscore mean? Dont use it outside the class, private
         '''
         Hash an arbitrary key and return an integer.
 
         You may replace the Python hash with DJB2 as a stretch goal.
         '''
-        return hash(key)
+
+        return hashlib.sha256(key.encode())
 
 
     def _hash_djb2(self, key):
@@ -35,7 +38,7 @@ class HashTable:
         pass
 
 
-    def _hash_mod(self, key):
+    def _hash_mod(self, key): # calls hash and returns 
         '''
         Take an arbitrary key and return a valid integer index
         within the storage capacity of the hash table.
@@ -51,7 +54,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key) # need to find the index, take the key and turn it into the index of our array
+
+        if self.storage[index] is not None: # if the index is full give an error
+            print('ERROR: Key in use')
+        else: # otherwise, the index becomes our value 
+            self.storage[index] = value
+        
 
 
 
@@ -63,7 +72,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index] is not None: # if there is an index in our storage
+            self.storage[index] = None # then remove it / make it none
+        else:
+            print('ERROR: Key not found')
+        
 
 
     def retrieve(self, key):
@@ -74,7 +89,9 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        return self.storage[index] # return storage at the index, nothing is there already so dont 'have' to handle none conditional
 
 
     def resize(self):
@@ -84,7 +101,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        old_storage = self.storage.copy()
+        self.capacity = self.capacity * 2 # double the capacity
+        self.storage = [None] * self.capacity
+
+        for bucket_item in old_storage:
+            self.insert(bucket_item.key, bucket_item.value)
 
 
 
